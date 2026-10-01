@@ -6,6 +6,8 @@ An account-wide appearance collection, native character preview and saved outfit
 
 Unlocking consumes one **Appearance Unlock** ticket (item **168100001**) and keeps the source equipment. Collected appearances remain available across the account; applying them costs no extra ticket or Kinah. Try on several compatible appearances, then apply the selection together. Headwear, shields, wings, costumes and race/gender restrictions are supported. Up to 20 named outfits can be saved per account. See the [player guide](docs/WARDROBE.md).
 
+https://www.youtube.com/watch?v=3JwoaFSOqhA
+
 ## Download
 
 Choose **Code > Download ZIP** on [GitHub](https://github.com/AngelShade/aion-wardrobe) and extract it, or:
