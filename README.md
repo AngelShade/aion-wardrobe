@@ -1,5 +1,7 @@
 # Aion 4.8 Server Emulator - Wardrobe
 
+Based and works on https://github.com/beyond-aion/aion-server
+
 An account-wide appearance collection, native character preview and saved outfits for the English Aion 4.8 NA 64-bit client. Open **Game Menu > Additional Functions > Wardrobe**, or type `/wardrobe`.
 
 Unlocking consumes one **Appearance Unlock** ticket (item **168100001**) and keeps the source equipment. Collected appearances remain available across the account; applying them costs no extra ticket or Kinah. Try on several compatible appearances, then apply the selection together. Headwear, shields, wings, costumes and race/gender restrictions are supported. Up to 20 named outfits can be saved per account. See the [player guide](docs/WARDROBE.md).
