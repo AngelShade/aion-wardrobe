@@ -10,6 +10,7 @@
 #include <list>
 #include <memory>
 #include <mutex>
+#include <cmath>
 #include <string>
 #include <unordered_map>
 
@@ -20,6 +21,7 @@ using Callback=Ptr(__cdecl*)(Ptr,Ptr);
 using Create=Ptr(__cdecl*)(int,int,bool);
 using Set=void(__cdecl*)(Ptr,Callback);
 using Destroy=void(__cdecl*)(Ptr);
+namespace wardrobe { void destroy(Ptr view); }
 Ptr(__cdecl* request_url)(Ptr);
 size_t(__cdecl* to_utf8)(Ptr,char*,size_t);
 Ptr(__cdecl* from_wide)(const wchar_t*,size_t);
@@ -120,16 +122,19 @@ void attach(Ptr view){
 }
 Ptr __cdecl create_view(int width,int height,bool transparent){Ptr view=original_create(width,height,transparent);attach(view);return view;}
 void __cdecl set_resource(Ptr view,Callback callback){if(!view){original_set(view,callback);return;}{std::lock_guard<std::mutex> lock(callback_mutex);previous_callbacks[view]=callback==on_resource?nullptr:callback;}original_set(view,on_resource);}
-void __cdecl destroy_view(Ptr view){{std::lock_guard<std::mutex> lock(callback_mutex);previous_callbacks.erase(view);}original_destroy(view);}
+void __cdecl destroy_view(Ptr view){{std::lock_guard<std::mutex> lock(callback_mutex);previous_callbacks.erase(view);}wardrobe::destroy(view);original_destroy(view);}
 void jump(uint8_t* p,void* destination){const uint8_t op[]={0xff,0x25,0,0,0,0};std::memcpy(p,op,6);std::memcpy(p+6,&destination,8);}
 void* trampoline(void* target,size_t length){auto memory=static_cast<uint8_t*>(VirtualAlloc(nullptr,length+14,MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE));if(!memory)throw std::runtime_error("Trampoline allocation");std::memcpy(memory,target,length);jump(memory+length,static_cast<uint8_t*>(target)+length);return memory;}
 void detour(void* target,void* destination,size_t length){DWORD old;if(!VirtualProtect(target,length,PAGE_EXECUTE_READWRITE,&old))throw std::runtime_error("Hook protection");jump(static_cast<uint8_t*>(target),destination);std::memset(static_cast<uint8_t*>(target)+14,0x90,length-14);DWORD ignored;VirtualProtect(target,length,old,&ignored);FlushInstructionCache(GetCurrentProcess(),target,length);}
+#include "wardrobe_preview.h"
 bool setup(const std::filesystem::path& root){
     HMODULE module=GetModuleHandleW(L"Awesomium.dll");if(!module)return false;
     request_url=symbol<decltype(request_url)>(module,"awe_resource_request_get_url");to_utf8=symbol<decltype(to_utf8)>(module,"awe_string_to_utf8");from_wide=symbol<decltype(from_wide)>(module,"awe_string_create_from_wide");destroy_string=symbol<decltype(destroy_string)>(module,"awe_string_destroy");response_create=symbol<decltype(response_create)>(module,"awe_resource_response_create");set_callback=symbol<Set>(module,"awe_webview_set_callback_resource_request");
     return request_url&&to_utf8&&from_wide&&destroy_string&&response_create&&set_callback&&load_index(root);
 }
 }
+extern "C" __declspec(dllexport) void __cdecl AionWardrobeVisibility(Ptr widget,int event){wardrobe::visible(widget,event);}
+extern "C" __declspec(dllexport) void __cdecl AionWardrobeTick(){wardrobe::tick();}
 extern "C" __declspec(dllexport) int __cdecl AionIconBridgeAttach(Ptr view,const wchar_t* root){try{if(!view||!root||!setup(root))return 0;attach(view);return 1;}catch(...){return 0;}}
 extern "C" __declspec(dllexport) size_t __cdecl AionIconBridgeDecode(uint32_t item,uint8_t* output,size_t capacity){try{auto bytes=get_icon(item);if(!bytes)return 0;if(output&&capacity>=bytes->size())std::memcpy(output,bytes->data(),bytes->size());return bytes->size();}catch(...){return 0;}}
 extern "C" __declspec(dllexport) int __cdecl AionIconBridgeInitialize(){
@@ -143,7 +148,9 @@ extern "C" __declspec(dllexport) int __cdecl AionIconBridgeInitialize(){
         const uint8_t set_bytes[]={0x48,0x89,0x54,0x24,0x10,0x48,0x89,0x4c,0x24,0x08,0x48,0x8b,0x4c,0x24,0x08};
         if(!create||!destroy||std::memcmp(reinterpret_cast<void*>(create),create_bytes,sizeof(create_bytes))||std::memcmp(reinterpret_cast<void*>(destroy),destroy_bytes,sizeof(destroy_bytes))||std::memcmp(reinterpret_cast<void*>(set_callback),set_bytes,sizeof(set_bytes))){log("Initialization failed: unsupported browser prologue; native icons unavailable");return;}
         original_create=reinterpret_cast<Create>(trampoline(reinterpret_cast<void*>(create),sizeof(create_bytes)));original_destroy=reinterpret_cast<Destroy>(trampoline(reinterpret_cast<void*>(destroy),sizeof(destroy_bytes)));original_set=reinterpret_cast<Set>(trampoline(reinterpret_cast<void*>(set_callback),sizeof(set_bytes)));
-        detour(reinterpret_cast<void*>(set_callback),reinterpret_cast<void*>(set_resource),sizeof(set_bytes));detour(reinterpret_cast<void*>(destroy),reinterpret_cast<void*>(destroy_view),sizeof(destroy_bytes));detour(reinterpret_cast<void*>(create),reinterpret_cast<void*>(create_view),sizeof(create_bytes));initialized=true;log("Initialized: original Items.pak, 512-texture memory cache");
+        detour(reinterpret_cast<void*>(set_callback),reinterpret_cast<void*>(set_resource),sizeof(set_bytes));detour(reinterpret_cast<void*>(destroy),reinterpret_cast<void*>(destroy_view),sizeof(destroy_bytes));detour(reinterpret_cast<void*>(create),reinterpret_cast<void*>(create_view),sizeof(create_bytes));
+        if(!wardrobe::initialize(module))throw std::runtime_error("Unsupported Wardrobe browser callback");
+        initialized=true;log("Initialized: original Items.pak, 512-texture memory cache, native Wardrobe preview");
     }catch(...){log("Initialization failed: native exception; native icons unavailable");}});return initialized?1:0;
 }
 BOOL WINAPI DllMain(HINSTANCE module,DWORD reason,LPVOID){if(reason==DLL_PROCESS_ATTACH){own_module=module;DisableThreadLibraryCalls(module);}return TRUE;}

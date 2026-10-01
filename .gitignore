@@ -20,3 +20,14 @@ game-server/config/central-market/media/icons/
 **/__pycache__/
 
 **/media/icons/*.png
+
+**/artifacts/
+**/*-native-build/
+**/TransmogMenu-backups/
+*.dll
+*.pak
+*.jar
+*.exe
+*.obj
+*.lib
+*.exp

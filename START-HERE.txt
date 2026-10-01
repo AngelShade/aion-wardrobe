@@ -1,0 +1,28 @@
+AION 4.8 NA WARDROBE - SHARING SOURCE
+
+Read README.md before installing. Download ZIP from GitHub and extract it,
+or clone https://github.com/AngelShade/aion-wardrobe.git
+
+SERVER OPERATORS
+Build from this repository's root: the folder containing pom.xml and game-server.
+Example: D:\Servers\aion-wardrobe
+Deploy the built JAR, config/wardrobe, config/central-market and Appearance Unlock
+item 168100001 to your ACTIVE GameServer folder after players log out and the
+server is stopped normally. Enable gameserver.centralmarket.enable in the active
+config/mygs.properties. Wardrobe uses the included Central Market infrastructure.
+Provide Appearance Unlock tickets using your own shop/rewards or existing admin
+permissions. The private Cash Shop is not included in this public repository.
+
+CLIENT PREPARATION / PLAYERS
+The client root is the Aion folder containing bin64, Data, L10N and Plugin.
+Example: D:\Games\Aion 4.8 NA
+Do NOT choose bin64 itself or this downloaded repository as the client root.
+Prepare with client-mods/wardrobe/build_package.py into a NEW folder OUTSIDE Aion.
+Example staging folder: D:\Wardrobe-Staged
+Use the original supported English 4.8 NA 64-bit client; customized Game.dll
+files are refused. See README.md for Python, JDK and C++ compiler requirements.
+Fully close Aion before installing with client-mods/wardrobe/Install.ps1.
+Reconnect, then open Additional Functions > Wardrobe or type /wardrobe.
+
+The public repository has source/tools only: no original client files, extracted
+artwork, database credentials, player data or compiled server/client binaries.

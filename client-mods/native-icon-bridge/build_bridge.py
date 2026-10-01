@@ -20,7 +20,7 @@ def build(client, output):
     vcvars = program_files / 'Microsoft Visual Studio/2022/BuildTools/VC/Auxiliary/Build/vcvars64.bat'
     if not vcvars.exists():
         raise ValueError('Install Visual Studio 2022 C++ Build Tools, or edit build_bridge.py for your MSVC installation')
-    command = f'call "{vcvars}" >nul && cl /nologo /std:c++17 /EHsc /O2 /MT /LD /Fo:"{work / "icon_bridge.obj"}" "{source / "icon_bridge.cpp"}" /link /OUT:"{target / "AionIconBridge.dll"}" /IMPLIB:"{work / "icon_bridge.lib"}" windowscodecs.lib ole32.lib bcrypt.lib'
+    command = f'call "{vcvars}" >nul && cl /nologo /std:c++17 /EHsc /O2 /MT /LD /Fo:"{work / "icon_bridge.obj"}" "{source / "icon_bridge.cpp"}" /link /OUT:"{target / "AionIconBridge.dll"}" /IMPLIB:"{work / "icon_bridge.lib"}" windowscodecs.lib ole32.lib bcrypt.lib user32.lib'
     script = work / 'compile.cmd'
     script.write_text('@echo off\n' + command + '\n', encoding='utf-8')
     # A raw command line preserves cmd.exe's nested quotes; list2cmdline escapes

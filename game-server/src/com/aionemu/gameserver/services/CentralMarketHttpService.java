@@ -30,8 +30,10 @@ public final class CentralMarketHttpService {
 	public static synchronized void start() throws Exception {
 		if (!GSConfig.ENABLE_CENTRAL_MARKET) return;
 		CentralMarketService.start();
+		WardrobeService.start();
 		server=HttpServer.create(new InetSocketAddress(GSConfig.CENTRAL_MARKET_BIND,GSConfig.CENTRAL_MARKET_PORT),16);
 		server.createContext("/market",CentralMarketHttpService::handle);
+		server.createContext("/market/wardrobe",WardrobeHttpService::handle);
 		server.setExecutor(ThreadPoolManager.getInstance());
 		server.start();
 		log.info("Central Market listening at http://{}:{}/market",GSConfig.CENTRAL_MARKET_BIND,GSConfig.CENTRAL_MARKET_PORT);
@@ -39,7 +41,7 @@ public final class CentralMarketHttpService {
 	public static synchronized void stop() {
 		if(server!=null) { server.stop(1); server=null; }
 	}
-	private static Player findPlayer(String sessionId) {
+	static Player findPlayer(String sessionId) {
 		if(sessionId.isBlank()) return null;
 		for(Player player:World.getInstance().getAllPlayers()) {
 			String token=player.getAccount().getSecurityToken();

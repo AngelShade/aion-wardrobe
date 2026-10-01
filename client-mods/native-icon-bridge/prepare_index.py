@@ -7,7 +7,6 @@ import sys
 import zlib
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'expanded-warehouse'))
 from codec import read_pak, binary_xml, KEYS
 
 RECORD = struct.Struct('<IIIIIHH32s')
