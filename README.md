@@ -1,4 +1,4 @@
-# Aion 4.8 Wardrobe
+# Aion 4.8 Server Emulator - Wardrobe
 
 An account-wide appearance collection, native character preview and saved outfits for the English Aion 4.8 NA 64-bit client. Open **Game Menu > Additional Functions > Wardrobe**, or type `/wardrobe`.
 
