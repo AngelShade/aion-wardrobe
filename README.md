@@ -1,5 +1,9 @@
 # Aion 4.8 Server Emulator - Wardrobe
 
+## Install with the other published Aetherfall mods
+
+This mod is included in the [combined Season Pass release](https://github.com/AngelShade/aion-season-pass). Its [shared installation guide](https://github.com/AngelShade/aion-season-pass/blob/main/docs/SHARED_MODS.md) combines **Season Pass, Central Market, Wardrobe, Skip Poeta/Ishalgen Journey and Inventory/Warehouse Expansion** in one native client package and one server listener. Use that profile when installing these mods together; do not layer the separate standalone installers. Recorded standalone installations can be upgraded using a separate original client copy. Offline integration checks are distinct from actual gameplay acceptance.
+
 ## Based and works on https://github.com/beyond-aion/aion-server
 
 An account-wide appearance collection, native character preview and saved outfits for the English Aion 4.8 NA 64-bit client. Open **Game Menu > Additional Functions > Wardrobe**, or type `/wardrobe`.
