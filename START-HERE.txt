@@ -1,3 +1,8 @@
+CUMULATIVE MODULE INSTALLATION
+Use Install-Module.ps1 to install this module alone or add it to the other published modules.
+See README.md and the individual installation guide.
+
+OLDER ISOLATED INSTALLATION INSTRUCTIONS
 AION 4.8 NA WARDROBE - SHARING SOURCE
 
 Read README.md before installing. Download ZIP from GitHub and extract it,
